@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+    elasticsearch:
+        image:
+            elasticsearch:7.9.3
+        volumes:
+            - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+            - ./elasticsearch/docker-cluster.log:/usr/share/elasticsearch/logs/docker-cluster.log
+        restart: always
+        ports:
+            - "0.0.0.0:9200:9200"
+            - "0.0.0.0:9300:9300"
+        #command: -e "discovery.type=single-node"
+        environment:
+            - discovery.type=single-node
+        networks:
+            - net_es
+        container_name: elasticsearch
+
+    kibana:
+        depends_on:
+            - elasticsearch
+        image:
+            kibana:7.9.3
+        volumes:
+            - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+        restart: always
+        ports:
+            - "0.0.0.0:5601:5601"
+        networks:
+            - net_es
+        container_name: kibana
+networks:
+    net_es:
